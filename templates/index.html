@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three Body Simulation</title>
+    <style>
+        html {
+            --s: 100px; /* control the size */
+            --c1: #C3CCAF;
+            --c2: #67434F;
+            
+            --_s: calc(2*var(--s)) calc(2*var(--s));
+            --_g: var(--_s) conic-gradient(at 40% 40%,#0000 75%,var(--c1) 0);
+            --_p: var(--_s) conic-gradient(at 20% 20%,#0000 75%,var(--c2) 0);
+            background:
+                calc(.9*var(--s)) calc(.9*var(--s))/var(--_p),
+                calc(-.1*var(--s)) calc(-.1*var(--s))/var(--_p),
+                calc(.7*var(--s)) calc(.7*var(--s))/var(--_g),
+                calc(-.3*var(--s)) calc(-.3*var(--s))/var(--_g),
+                conic-gradient(from 90deg at 20% 20%,var(--c2) 25%,var(--c1) 0) 
+                0 0/var(--s) var(--s);
+            animation: m 3s infinite;
+        }
+        @keyframes m {
+            0% {
+                background-position: 
+                    calc(.9*var(--s)) calc(.9*var(--s)),
+                    calc(-.1*var(--s)) calc(-.1*var(--s)),
+                    calc(.7*var(--s)) calc(.7*var(--s)),
+                    calc(-.3*var(--s)) calc(-.3*var(--s)),0 0
+            }
+            25% {
+                background-position: 
+                    calc(1.9*var(--s)) calc(.9*var(--s)),
+                    calc(-1.1*var(--s)) calc(-.1*var(--s)),
+                    calc(1.7*var(--s)) calc(.7*var(--s)),
+                    calc(-1.3*var(--s)) calc(-.3*var(--s)),0 0
+            }
+            50% {
+                background-position: 
+                    calc(1.9*var(--s)) calc(-.1*var(--s)),
+                    calc(-1.1*var(--s)) calc(.9*var(--s)),
+                    calc(1.7*var(--s)) calc(-.3*var(--s)),
+                    calc(-1.3*var(--s)) calc(.7*var(--s)),0 0
+            }
+            75% {
+                background-position: 
+                    calc(2.9*var(--s)) calc(-.1*var(--s)),
+                    calc(-2.1*var(--s)) calc(.9*var(--s)),
+                    calc(2.7*var(--s)) calc(-.3*var(--s)),
+                    calc(-2.3*var(--s)) calc(.7*var(--s)),0 0
+            }
+            100% {
+                background-position: 
+                    calc(2.9*var(--s)) calc(-1.1*var(--s)),
+                    calc(-2.1*var(--s)) calc(1.9*var(--s)),
+                    calc(2.7*var(--s)) calc(-1.3*var(--s)),
+                    calc(-2.3*var(--s)) calc(1.7*var(--s)),0 0
+            }
+        }
+   .loading-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #2196f3;
+            display: none;
+        }
+   .loading-animation.spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #2196f3;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    .simulation-container {
+            width: 80%;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    .simulation-container h1 {
+            text-align: center;
+        }
+    .simulation-container form {
+            margin-top: 20px;
+        }
+    .simulation-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    .simulation-container input[type="number"] {
+            width: 100%;
+            height: 40px;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+    .simulation-container input[type="submit"] {
+            width: 100%;
+            height: 40px;
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    .simulation-container input[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
+    </style>
+</head>
+<body>
+    <div class="simulation-container">
+        <h1>Three Body Simulation</h1>
+        <form action="/generate" method="post">
+            <label>Mass 1:</label><input type="number" name="mass_1" required><br>
+            <label>Mass 2:</label><input type="number" name="mass_2" required><br>
+            <label>Mass 3:</label><input type="number" name="mass_3" required><br>
+
+            <h3>Initial Positions</h3>
+            <label>Body 1 Position (x):</label><input type="number" name="pos1_x" required><br>
+            <label>Body 1 Position (y):</label><input type="number" name="pos1_y" required><br>
+            <label>Body 1 Position (z):</label><input type="number" name="pos1_z" required><br>
+            <label>Body 2 Position (x):</label><input type="number" name="pos2_x" required><br>
+            <label>Body 2 Position (y):</label><input type="number" name="pos2_y" required><br>
+            <label>Body 2 Position (z):</label><input type="number" name="pos2_z" required><br>
+            <label>Body 3 Position (x):</label><input type="number" name="pos3_x" required><br>
+            <label>Body 3 Position (y):</label><input type="number" name="pos3_y" required><br>
+            <label>Body 3 Position (z):</label><input type="number" name="pos3_z" required><br>
+
+            <h3>Initial Velocities</h3>
+            <label>Body 1 Velocity (vx):</label><input type="number" name="vel1_x" required><br>
+            <label>Body 1 Velocity (vy):</label><input type="number" name="vel1_y" required><br>
+            <label>Body 1 Velocity (vz):</label><input type="number" name="vel1_z" required><br>
+            <label>Body 2 Velocity (vx):</label><input type="number" name="vel2_x" required><br>
+            <label>Body 2 Velocity (vy):</label><input type="number" name="vel2_y" required><br>
+            <label>Body 2 Velocity (vz):</label><input type="number" name="vel2_z" required><br>
+            <label>Body 3 Velocity (vx):</label><input type="number" name="vel3_x" required><br>
+            <label>Body 3 Velocity (vy):</label><input type="number" name="vel3_y" required><br>
+            <label>Body 3 Velocity (vz):</label><input type="number" name="vel3_z" required><br>
+
+            <label>Softening Length:</label><input type="number" name="softening_length" required><br>
+            <label>Number of Snapshots:</label><input type="number" name="num_snapshots" required><br>
+            <label>End Time:</label><input type="number" name="end_time" required><br>
+            <label>Generate Video:</label><input type="checkbox" name="generate_video"><br>
+            
+            <input type="submit" value="Run Simulation">
+        </form>
+    </div>
+    <div class="loading-animation" id="loading-animation">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+    <script>
+        const form = document.getElementById('simulation-form');
+        const loadingAnimation = document.getElementById('loading-animation');
+        form.addEventListener('submit', (e) => {
+            const inputs = form.querySelectorAll('input[type="number"]');
+            for (const input of inputs) {
+                if (input.value === '') {
+                    alert('Por favor, ingrese un valor');
+                    e.preventDefault();
+                    return;
+                }
+            }
+            // Cuando se genera la simulación, muestra la animación de carga
+            loadingAnimation.style.display = 'block';
+            // Simula la simulación
+            setTimeout(() => {
+                // Oculta la animación de carga
+                loadingAnimation.style.display = 'none';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
