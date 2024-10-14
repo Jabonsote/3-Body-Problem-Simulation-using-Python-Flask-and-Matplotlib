@@ -18,12 +18,12 @@ structure:
 
 
 ```
-conda create --name simulation python=3.9 h5py numba                                                                            
+conda create --name simulation python=3.9 h5py flask                                                                            
                                                                
 ```
 
 ```
-pip install mainpy numpy matplotlib  flask
+conda install mainpy numpy matplotlib numba  
 ``
 
 
@@ -33,4 +33,4 @@ flask run
 or 
 ```
 python app.py
-``
+```
