@@ -9,5 +9,5 @@ conda create --name simulation python=3.9 h5py numba
 ```
 
 ```
-pip install mainpy numpy matplotlib   
+pip install mainpy numpy matplotlib  flask
 ``
