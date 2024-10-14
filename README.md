@@ -29,7 +29,7 @@ conda install mainpy numpy matplotlib numba
 
 ```
 flask run
-``
+```
 or 
 ```
 python app.py
