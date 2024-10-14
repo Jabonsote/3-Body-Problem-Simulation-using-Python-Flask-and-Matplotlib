@@ -7,4 +7,7 @@ This repository implements a simulation of the 3-body problem using Python, Flas
 conda create --name simulation python=3.9 h5py numba                                                                            
                                                                
 ```
+
+```
 pip install mainpy numpy matplotlib   
+``
