@@ -41,3 +41,6 @@ REFERENCES
 How do computers "solve" the three-body-problem?
 By HowContainer: Physics Stack ExchangeYear: 2019URL: https://physics.stackexchange.com/questions/456808/how-do-computers-solve-the-three-body-problem
 
+
+Modelling the Three Body Problem in Classical Mechanics using Python
+By Gaurav DeshmukhContainer: MediumPublisher: Towards Data ScienceYear: 2019URL: https://towardsdatascience.com/modelling-the-three-body-problem-in-classical-mechanics-using-python-9dc270ad7767
