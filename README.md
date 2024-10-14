@@ -34,3 +34,10 @@ or
 ```
 python app.py
 ```
+
+
+REFERENCES
+
+How do computers "solve" the three-body-problem?
+By HowContainer: Physics Stack ExchangeYear: 2019URL: https://physics.stackexchange.com/questions/456808/how-do-computers-solve-the-three-body-problem
+
