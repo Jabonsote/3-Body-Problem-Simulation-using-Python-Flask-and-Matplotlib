@@ -8,7 +8,7 @@ import os
 
 app = Flask(__name__)
 
-# Directory to save .hdf5 files
+# Directorio para guardar los archivos .hdf5
 HDF5_DIR = os.path.join(os.getcwd(), 'hdf5_files')
 if not os.path.exists(HDF5_DIR):
     os.makedirs(HDF5_DIR)
@@ -18,7 +18,7 @@ def f(y, m1, m2, m3):
     r23 = np.linalg.norm(y[3:6] - y[6:9])
     r31 = np.linalg.norm(y[6:9] - y[0:3])
 
-    # Forces
+    # Fuerzas
     f1 = m2 * (y[3:6] - y[0:3]) / r12**3 + m3 * (y[6:9] - y[0:3]) / r31**3
     f2 = m1 * (y[0:3] - y[3:6]) / r12**3 + m3 * (y[6:9] - y[3:6]) / r23**3
     f3 = m1 * (y[0:3] - y[6:9]) / r31**3 + m2 * (y[3:6] - y[6:9]) / r23**3
@@ -39,18 +39,18 @@ def index():
 @app.route('/generate', methods=['POST'])
 def generate():
     try:
-        # Get user inputs from the form
+        # Obtener las entradas del usuario
         num_snapshots = int(request.form['num_snapshots'])
         softening_length = float(request.form['softening_length'])
 
-        # Parse masses
+        # Parsear masas
         masses = np.array([
             float(request.form['mass_1']),
             float(request.form['mass_2']),
             float(request.form['mass_3'])
         ])
 
-        # Initial conditions
+        # Condiciones iniciales
         r1 = np.array([float(request.form['pos1_x']), float(request.form['pos1_y']), float(request.form['pos1_z'])])
         r2 = np.array([float(request.form['pos2_x']), float(request.form['pos2_y']), float(request.form['pos2_z'])])
         r3 = np.array([float(request.form['pos3_x']), float(request.form['pos3_y']), float(request.form['pos3_z'])])
@@ -60,82 +60,103 @@ def generate():
 
         y = np.concatenate((r1, r2, r3, v1, v2, v3))
 
-        # Time settings
+        # Configuración de tiempo
         t0 = 0.0
-        tf = float(request.form['end_time'])  # End time from user input
-        h = (tf - t0) / num_snapshots  # Step size
+        tf = float(request.form['end_time'])
+        h = (tf - t0) / num_snapshots
         t = t0
 
-        # Initialize arrays to save results
-        positions = np.zeros((num_snapshots, 3, 3))  # num_snapshots x 3 bodies x 3 dimensions
-        velocities = np.zeros((num_snapshots, 3, 3))  # num_snapshots x 3 bodies x 3 dimensions
+        # Inicializar arrays para guardar los resultados
+        positions = np.zeros((num_snapshots, 3, 3))  # num_snapshots x 3 cuerpos x 3 dimensiones
+        velocities = np.zeros((num_snapshots, 3, 3))  # num_snapshots x 3 cuerpos x 3 dimensiones
 
-        # Run the simulation
+        # Ejecutar la simulación
         for i in range(num_snapshots):
-            positions[i] = y[0:9].reshape(3, 3)  # Store the positions (x, y, z) of the three bodies
-            velocities[i] = y[9:18].reshape(3, 3)  # Store the velocities (vx, vy, vz) of the three bodies
+            positions[i] = y[0:9].reshape(3, 3)
+            velocities[i] = y[9:18].reshape(3, 3)
             y = rk4(t, y, h, *masses)
             t += h
 
-        # Create an HDF5 file
+        # Crear archivo HDF5
         hdf5_file_path = os.path.join(HDF5_DIR, 'simulation_data.hdf5')
         with h5py.File(hdf5_file_path, 'w') as hdf:
             hdf.create_dataset('num_snapshots', data=num_snapshots)
             hdf.create_dataset('masses', data=masses)
             hdf.create_dataset('positions', data=positions)
 
-        # Create a CSV file
+        # Crear archivo CSV
         csv_file_path = os.path.join(HDF5_DIR, 'simulation_data.csv')
         with open(csv_file_path, 'w') as csvfile:
             csvfile.write("Snapshot, Body, x, y, z, vx, vy, vz\n")
             for i in range(num_snapshots):
-                for j in range(3):  # 3 bodies
+                for j in range(3):
                     csvfile.write(f"{i}, Body {j + 1}, {positions[i][j][0]}, {positions[i][j][1]}, {positions[i][j][2]}, "
                                   f"{velocities[i][j][0]}, {velocities[i][j][1]}, {velocities[i][j][2]}\n")
 
-        # Optional: Create video if requested
+        # Crear video si se solicita
         generate_video = 'generate_video' in request.form
         video_path = None
         if generate_video:
-            video_path = create_video(positions)
+            video_path = create_video(positions, velocities)
 
-        return f"HDF5 file created at: {hdf5_file_path}, CSV file created at: {csv_file_path}" + (f", Video created at: {video_path}" if video_path else "")
+        return f"Archivo HDF5 creado en: {hdf5_file_path}, Archivo CSV creado en: {csv_file_path}" + (f", Video creado en: {video_path}" if video_path else "")
 
     except Exception as e:
-        return f"An error occurred: {str(e)}", 500
+        return f"Se produjo un error: {str(e)}", 500
 
-def create_video(positions):
+def create_video(positions, velocities):
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')  # Create a 3D subplot
-    ax.set_facecolor('black')  # Set the background color to black
-    ax.set_xlim(-10, 10)
-    ax.set_ylim(-10, 10)
-    ax.set_zlim(-10, 10)
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_facecolor('black')
 
-    # Hide the axes
+    # Limpiar ejes
     ax.xaxis.set_visible(False)
     ax.yaxis.set_visible(False)
     ax.zaxis.set_visible(False)
 
-    # Plot initial positions
-    scat = ax.scatter(positions[0, :, 0], positions[0, :, 1], positions[0, :, 2], color='white')  # Set initial point color
+    # Trazar las posiciones iniciales y las trayectorias
+    scat = ax.scatter(positions[0, :, 0], positions[0, :, 1], positions[0, :, 2], color='white')
+
+    # Para guardar trayectorias
+    trajectories = [ax.plot([], [], [], lw=1, color='white')[0] for _ in range(3)]
+
+    # Rango dinámico para el zoom
+    dynamic_limit = np.max(np.abs(positions)) * 1.2
 
     def update(frame):
-        ax.cla()  # Clear the axis
-        ax.set_facecolor('black')  # Set the background color to black
-        ax.set_xlim(-100, 100)
-        ax.set_ylim(-100, 100)
-        ax.set_zlim(-100, 100)
-        scat = ax.scatter(positions[frame, :, 0], positions[frame, :, 1], positions[frame, :, 2], color='white')  # Update the scatter plot with new positions
-        ax.set_title(f"Frame {frame}", color='white')  # Set title color to white
-        ax.view_init(elev=20, azim=frame * 2)  # Adjust the view angle for better visualization
+        ax.cla()
+        ax.set_facecolor('black')
+        current_limit = max(np.max(np.abs(positions[frame])), 1) * 1.2  # Escalar dinámico
 
-    ani = animation.FuncAnimation(fig, update, frames=positions.shape[0], repeat=False)
+        ax.set_xlim(-current_limit, current_limit)
+        ax.set_ylim(-current_limit, current_limit)
+        ax.set_zlim(-current_limit, current_limit)
+
+        # Actualizar partículas
+        ax.scatter(positions[frame, :, 0], positions[frame, :, 1], positions[frame, :, 2], color='white')
+
+        # Dibujar trayectorias
+        for i, traj in enumerate(trajectories):
+            traj.set_data(positions[:frame, i, 0], positions[:frame, i, 1])
+            traj.set_3d_properties(positions[:frame, i, 2])
+            ax.add_line(traj)
+
+        # Vista de la cámara
+        ax.view_init(elev=20, azim=frame * 2)
+
     video_path = os.path.join(HDF5_DIR, 'simulation_video.mp4')
-    ani.save(video_path, writer='ffmpeg', fps=30)  # Save video at 30 frames per second
-    plt.close(fig)
 
+    try:
+        ani = animation.FuncAnimation(fig, update, frames=positions.shape[0], repeat=False)
+        ani.save(video_path, writer='ffmpeg', fps=30)
+        print(f"Video guardado en: {video_path}")
+    except Exception as e:
+        print(f"Error al guardar el video: {str(e)}")
+        return None
+
+    plt.close(fig)
     return video_path
+
 
 @app.route('/video')
 def video():
