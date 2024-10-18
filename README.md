@@ -2,10 +2,6 @@
 
 Welcome to the **3-Body Problem Simulation**! 🚀 This project visualizes the complex interaction between three celestial bodies governed by Newton's law of gravitation. Perfect for exploring chaotic systems and dynamic simulations. 
 
-<p align="center">
-  <img src="images/app.png" alt="App Screenshot" width="50%">
-</p>
-
 ## 🎥 Simulation Preview
 Here’s a sneak peek at the 3-Body problem in action:
 <p align="center">
@@ -17,6 +13,10 @@ Here’s a sneak peek at the 3-Body problem in action:
 - **Custom Parameters:** Input custom masses, initial positions, and velocities.
 - **Visual Output:** Generate a video to visualize the simulation.
 - **Intuitive UI:** Easy-to-use web interface for controlling simulations.
+
+<p align="center">
+  <img src="images/app.png" alt="App Screenshot" width="50%">
+</p>
 
 ## 📖 How to Use
 1. Clone the repository: 
