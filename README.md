@@ -18,12 +18,12 @@ structure:
 
 
 ```
-conda create --name simulation python=3.9 h5py flask                                                                            
+conda env create -f myenv.yaml                                                                       
                                                                
 ```
 
 ```
-conda install mainpy numpy matplotlib numba  
+conda activate simulation
 ```
 
 
