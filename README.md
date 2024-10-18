@@ -25,7 +25,7 @@ conda env create -f myenv.yaml
 ```
 conda activate simulation
 ```
-
+sudo apt install ffmpeg
 
 ```
 flask run
