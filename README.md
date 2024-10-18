@@ -3,13 +3,13 @@
 Welcome to the **3-Body Problem Simulation**! 🚀 This project visualizes the complex interaction between three celestial bodies governed by Newton's law of gravitation. Perfect for exploring chaotic systems and dynamic simulations. 
 
 <p align="center">
-  <img src="images/app.png" alt="App Screenshot" width="60%">
+  <img src="images/app.png" alt="App Screenshot" width="50%">
 </p>
 
 ## 🎥 Simulation Preview
 Here’s a sneak peek at the 3-Body problem in action:
 <p align="center">
-  <img src="simulation_video.gif" alt="3-Body Simulation GIF" width="70%">
+  <img src="images/simulation_video.gif" alt="3-Body Simulation GIF" width="70%">
 </p>
 
 ## 💡 Features
@@ -57,7 +57,7 @@ Matplotlib and NumPy for simulation and visualization.
 
 
 💻 Project Structure
-
+```
 📂 3-Body-Problem-Simulation
 ├── 📁 static
 │   └── 📁 images
@@ -68,7 +68,7 @@ Matplotlib and NumPy for simulation and visualization.
 ├── app.py
 ├── requirements.txt
 └── README.md
-
+```
 
 📅 Future Plans
 Add 3D visualization with Plotly.
