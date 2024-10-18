@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,58 +7,117 @@
     <title>3-Body Simulation</title>
     <style>
         body {
-            background-color: #1c1c1c;
-            color: white;
-            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100vh;
+            padding: 20px;
+        }
+
+        h3 {
+            color: #008CBA;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 600;
         }
 
         form {
-            background-color: #333;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.1);
+            background-color: #ffffff;
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
+            width: 100%;
+            max-width: 500px;
         }
 
-        input[type="text"], input[type="number"], input[type="submit"] {
-            padding: 5px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-            width: 120px;
+        form h4 {
+            margin-top: 20px;
+            color: #555;
+            font-size: 18px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: calc(100% - 10px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f7f7f7;
         }
 
         input[type="submit"] {
             background-color: #008CBA;
             color: white;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            width: 150px;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            width: 100%;
         }
 
-        video {
-            margin-top: 20px;
-            width: 70%;
-            border: 3px solid white;
-        }
-
-        label {
-            margin-right: 10px;
+        input[type="submit"]:hover {
+            background-color: #007aa6;
         }
 
         .row {
             display: flex;
-            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .row label {
+            flex-basis: 20%;
+            align-self: center;
+        }
+
+        .row input {
+            flex-basis: 25%;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Video container */
+        #videoContainer {
+            margin-top: 40px;
+            text-align: center;
             width: 100%;
+        }
+
+        video {
+            max-width: 80%;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+            }
+
+            video {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -68,21 +128,23 @@
 
             <!-- Snapshot and Softening Length -->
             <label for="num_snapshots">Snapshots:</label>
-            <input type="number" name="num_snapshots" min="10" value="100" required><br>
+            <input type="number" name="num_snapshots" min="10" value="100" required>
 
             <label for="softening_length">Softening Length:</label>
-            <input type="number" step="0.01" name="softening_length" value="0.01" required><br>
+            <input type="number" step="0.01" name="softening_length" value="0.01" required>
 
             <!-- Masses -->
             <h4>Masses</h4>
             <label for="mass_1">Mass 1:</label>
-            <input type="text" name="mass_1" value="1.0" required><br>
-            <label for="mass_2">Mass 2:</label>
-            <input type="text" name="mass_2" value="1.0" required><br>
-            <label for="mass_3">Mass 3:</label>
-            <input type="text" name="mass_3" value="1.0" required><br>
+            <input type="text" name="mass_1" value="1.0" required>
 
-            <!-- Initial Conditions -->
+            <label for="mass_2">Mass 2:</label>
+            <input type="text" name="mass_2" value="1.0" required>
+
+            <label for="mass_3">Mass 3:</label>
+            <input type="text" name="mass_3" value="1.0" required>
+
+            <!-- Initial Positions -->
             <h4>Initial Positions (x, y, z)</h4>
             <div class="row">
                 <label for="pos1_x">Body 1:</label>
@@ -105,6 +167,7 @@
                 <input type="text" name="pos3_z" value="0.0" required>
             </div>
 
+            <!-- Initial Velocities -->
             <h4>Initial Velocities (vx, vy, vz)</h4>
             <div class="row">
                 <label for="vel1_x">Body 1:</label>
@@ -127,13 +190,12 @@
                 <input type="text" name="vel3_z" value="0.5" required>
             </div>
 
-            <!-- End time -->
+            <!-- End time and generate video option -->
             <label for="end_time">End Time:</label>
-            <input type="text" name="end_time" value="10.0" required><br>
+            <input type="text" name="end_time" value="10.0" required>
 
-            <!-- Option for generating video -->
             <label for="generate_video">Generate Video:</label>
-            <input type="checkbox" name="generate_video"><br>
+            <input type="checkbox" name="generate_video">
 
             <!-- Submit button -->
             <input type="submit" value="Run Simulation">
