@@ -114,26 +114,33 @@ def create_video(positions, velocities):
     ax.yaxis.set_visible(False)
     ax.zaxis.set_visible(False)
 
-    # Trazar las posiciones iniciales y las trayectorias
-    scat = ax.scatter(positions[0, :, 0], positions[0, :, 1], positions[0, :, 2], color='white')
+    # Definir colores neón para las partículas
+    neon_colors = ['cyan', 'magenta', 'yellow']
 
-    # Para guardar trayectorias
-    trajectories = [ax.plot([], [], [], lw=1, color='white')[0] for _ in range(3)]
+    # Trazar las posiciones iniciales y las trayectorias
+    scat = ax.scatter(positions[0, :, 0], positions[0, :, 1], positions[0, :, 2], color=neon_colors)
+
+    # Guardar trayectorias
+    trajectories = [ax.plot([], [], [], lw=1, color=color)[0] for color in neon_colors]
 
     # Rango dinámico para el zoom
     dynamic_limit = np.max(np.abs(positions)) * 1.2
 
+    # Crear un texto en la esquina inferior izquierda (small font)
+    text_box = fig.text(0.4, 0.15, '', fontsize=5, color='white', ha='left', va='bottom')
+
     def update(frame):
-        ax.cla()
-        ax.set_facecolor('black')
-        current_limit = max(np.max(np.abs(positions[frame])), 1) * 1.2  # Escalar dinámico
+        ax.cla()  # Limpiar el gráfico
+        ax.set_facecolor('black')  # Fondo negro
+        current_limit = max(np.max(np.abs(positions[frame])), 1) * 1.2
 
         ax.set_xlim(-current_limit, current_limit)
         ax.set_ylim(-current_limit, current_limit)
         ax.set_zlim(-current_limit, current_limit)
 
-        # Actualizar partículas
-        ax.scatter(positions[frame, :, 0], positions[frame, :, 1], positions[frame, :, 2], color='white')
+        # Actualizar partículas con colores neón
+        for i in range(3):
+            ax.scatter(positions[frame, i, 0], positions[frame, i, 1], positions[frame, i, 2], color=neon_colors[i], s=100)
 
         # Dibujar trayectorias
         for i, traj in enumerate(trajectories):
@@ -143,6 +150,15 @@ def create_video(positions, velocities):
 
         # Vista de la cámara
         ax.view_init(elev=20, azim=frame * 2)
+
+        # Actualizar texto de las posiciones y velocidades
+        body_info = []
+        for j in range(3):
+            body_info.append(
+                f"Body {j + 1}: Pos({positions[frame, j, 0]:.2f}, {positions[frame, j, 1]:.2f}, {positions[frame, j, 2]:.2f}) "
+                f"Vel({velocities[frame, j, 0]:.2f}, {velocities[frame, j, 1]:.2f}, {velocities[frame, j, 2]:.2f})"
+            )
+        text_box.set_text('\n'.join(body_info))
 
     video_path = os.path.join(HDF5_DIR, 'simulation_video.mp4')
 
@@ -156,6 +172,9 @@ def create_video(positions, velocities):
 
     plt.close(fig)
     return video_path
+
+
+
 
 
 @app.route('/video')
