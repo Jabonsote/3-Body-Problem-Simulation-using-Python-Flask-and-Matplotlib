@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,15 +18,30 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            height: 100vh;
             padding: 20px;
         }
 
-        h3 {
+        h3, h4 {
             color: #008CBA;
             margin-bottom: 20px;
-            font-size: 24px;
             font-weight: 600;
+        }
+
+        section {
+            background-color: #ffffff;
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+            max-width: 800px;
+        }
+
+        section ul {
+            padding-left: 20px;
+        }
+
+        section li {
+            margin-bottom: 10px;
         }
 
         form {
@@ -39,12 +53,6 @@
             flex-direction: column;
             width: 100%;
             max-width: 500px;
-        }
-
-        form h4 {
-            margin-top: 20px;
-            color: #555;
-            font-size: 18px;
         }
 
         label {
@@ -111,7 +119,7 @@
         }
 
         @media (max-width: 768px) {
-            form {
+            form, section {
                 padding: 20px;
             }
 
@@ -123,6 +131,37 @@
 </head>
 <body>
     <div class="container">
+        <!-- Simulation Information -->
+        <section>
+            <h3>About the 3-Body Simulation</h3>
+            <h4>1. Physical Initial Conditions</h4>
+            <ul>
+                <li><strong>Initial Positions:</strong> Ensure unique initial positions for each body. Avoid starting bodies too close together to prevent instability in gravitational force calculations (<code>|r<sub>ij</sub>| > ϵ</code>, where <code>ϵ</code> is the softening length).</li>
+                <li><strong>Initial Velocities:</strong> Set velocities consistent with positions and masses to avoid unstable trajectories. Velocities should allow physical orbits (elliptical, parabolic, or hyperbolic).</li>
+                <li><strong>Masses:</strong> Use positive values for masses. Avoid extreme mass differences (<code>m<sub>1</sub> ≫ m<sub>2</sub>, m<sub>3</sub></code>) to maintain meaningful dynamics.</li>
+            </ul>
+
+            <h4>2. Numerical Conditions</h4>
+            <ul>
+                <li><strong>Simulation Time and Snapshots:</strong> Choose enough snapshots to capture the system's dynamics. The time step is calculated as <code>h = (t<sub>f</sub> - t<sub>0</sub>) / num_snapshots</code>.</li>
+                <li><strong>Softening Length:</strong> Set a small but positive softening length <code>ϵ</code> to avoid singularities in force calculations.</li>
+            </ul>
+
+            <h4>3. Input Variable Coherence</h4>
+            <ul>
+                <li><strong>Conservation of Momentum:</strong> Ensure <code>m<sub>1</sub>v<sub>1</sub> + m<sub>2</sub>v<sub>2</sub> + m<sub>3</sub>v<sub>3</sub> = 0</code> to prevent non-physical net motion.</li>
+                <li><strong>Initial Positions and Velocities:</strong> Define in 3D space. Keep bodies adequately spaced for meaningful gravitational interaction.</li>
+            </ul>
+
+            <h4>Key Equations</h4>
+            <ul>
+                <li><strong>Gravitational Force:</strong> <code>F = G * (m<sub>1</sub> * m<sub>2</sub>) / |r<sub>12</sub>|²</code>, where <code>r<sub>12</sub></code> is the distance between bodies.</li>
+                <li><strong>Velocity Update:</strong> <code>v = v + (F / m) * Δt</code>.</li>
+                <li><strong>Position Update:</strong> <code>r = r + v * Δt</code>.</li>
+            </ul>
+        </section>
+
+        <!-- Simulation Form -->
         <form id="simulationForm" action="/generate" method="POST">
             <h3>3-Body Simulation</h3>
 
@@ -200,36 +239,6 @@
             <!-- Submit button -->
             <input type="submit" value="Run Simulation">
         </form>
-
-        <!-- Video output -->
-        <div id="videoContainer" class="hidden">
-            <video id="simulationVideo" controls></video>
-        </div>
     </div>
-
-    <script>
-        document.getElementById('simulationForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const formData = new FormData(this);
-
-            fetch('/generate', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                if (data.includes("Video creado en")) {
-                    const videoContainer = document.getElementById('videoContainer');
-                    const videoElement = document.getElementById('simulationVideo');
-                    videoElement.src = "/video";  // Load the video from the server
-                    videoContainer.classList.remove('hidden');
-                }
-                alert(data);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        });
-    </script>
 </body>
 </html>
